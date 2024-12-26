@@ -1,5 +1,6 @@
 const std = @import("std");
 const render = @import("render.zig");
+const sprites = @import("sprites.zig");
 
 const default_termsize = render.TermSize{
     .width = 50,
@@ -11,208 +12,18 @@ pub fn main() !void {
     var buf_writer = std.io.bufferedWriter(stdout.writer());
     const renderer = try render.initRenderer(buf_writer.writer());
 
-    var draw_list = [_]render.Drawable{
-        render.Drawable{
-            .cols = 20,
-            .texture = &[_]render.Pixel{
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                //
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '_' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                //
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '_', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = '|', .background = .{ .r = 255, .g = 0, .b = 0 } },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-                .{ .char = ' ' },
-            },
-            .z_index = 0,
+    var i: u16 = 0;
+    var term_size = try render.termSize(stdout) orelse default_termsize;
+    const term_pixels = @as(usize, term_size.width) * @as(usize, term_size.height);
+    var draw_list = [_]render.Drawing{
+        render.Drawing{
+            .sprite = sprites.SpriteEnum.enemy_medium,
             .position = .{ .x = 0, .y = 0 },
         },
     };
-
-    var i: u16 = 0;
-    var term_size = try render.termSize(stdout) orelse default_termsize;
-    while (i < term_size.width * term_size.height) : (i += 1) {
-        defer std.time.sleep(17 * std.time.ns_per_ms);
+    while (i < term_pixels) : (i += 1) {
+        // defer std.time.sleep(17 * std.time.ns_per_ms);
+        defer std.time.sleep(50 * std.time.ns_per_ms);
 
         term_size = try render.termSize(stdout) orelse default_termsize;
         const frame = render.Frame{
@@ -228,4 +39,10 @@ pub fn main() !void {
             drawable.position.y = i / term_size.width;
         }
     }
+}
+
+test {
+    _ = render;
+    _ = sprites;
+    std.testing.refAllDecls(@This());
 }

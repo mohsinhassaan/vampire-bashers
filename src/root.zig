@@ -1,4 +1,6 @@
 const std = @import("std");
+const render = @import("render.zig");
+const sprites = @import("sprites.zig");
 const testing = std.testing;
 
 export fn add(a: i32, b: i32) i32 {

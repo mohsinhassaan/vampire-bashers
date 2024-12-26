@@ -1,5 +1,10 @@
 const std = @import("std");
 const builtin = @import("builtin");
+const sprites = @import("sprites.zig");
+
+pub const BACKGROUND_CHAR = ' ';
+pub const DEFAULT_FOREGROUND = Color{ .r = 255, .g = 255, .b = 255 };
+pub const DEFAULT_BACKGROUND = Color{ .r = 0, .g = 0, .b = 0 };
 
 pub fn Renderer(WriterType: type) type {
     return struct {
@@ -9,36 +14,42 @@ pub fn Renderer(WriterType: type) type {
 
         pub fn drawFrame(self: Self, frame: Frame) !void {
             try self.drawBackground(frame.term_size);
-            for (frame.draw_list) |drawable| {
-                try self.draw(drawable);
+            for (frame.draw_list) |drawing| {
+                try self.draw(drawing);
             }
         }
 
-        pub fn draw(self: Self, drawable: Drawable) !void {
-            try self.moveCursor(drawable.position);
+        pub fn draw(self: Self, drawing: Drawing) !void {
+            try self.moveCursor(drawing.position);
 
-            var line_start = drawable.position;
-            for (drawable.texture, 0..) |pixel, i| {
-                if (i % drawable.cols == 0) {
+            var line_start = drawing.position;
+            const sprite = sprites.enumToSprite(drawing.sprite);
+            for (sprite.texture, 0..) |pixel, i| {
+                if (i % sprite.cols == 0) {
                     line_start.y += 1;
                     try self.moveCursor(line_start);
                 }
+
                 try self.setForeground(pixel.foreground);
                 try self.setBackground(pixel.background);
 
-                _ = try self.writer.writeByte(pixel.char);
+                if (pixel.char) |c| {
+                    _ = try self.writer.writeByte(c);
+                } else {
+                    try self.moveCursorForwards(1);
+                }
             }
         }
 
         fn drawBackground(self: Self, term_size: TermSize) !void {
-            try self.setForeground(default_foreground);
-            try self.setBackground(default_background);
+            try self.setForeground(DEFAULT_FOREGROUND);
+            try self.setBackground(DEFAULT_BACKGROUND);
             for (0..term_size.height + 1) |y| {
                 try self.moveCursor(.{
                     .x = 0,
                     .y = @intCast(y),
                 });
-                try self.writer.writeByteNTimes('.', term_size.width);
+                try self.writer.writeByteNTimes(BACKGROUND_CHAR, term_size.width);
             }
         }
 
@@ -89,25 +100,20 @@ pub const Color = struct {
     b: u8,
 };
 
-const default_foreground = Color{ .r = 255, .g = 255, .b = 255 };
-const default_background = Color{ .r = 0, .g = 0, .b = 0 };
-
 pub const Pixel = struct {
-    char: u8,
-    foreground: Color = default_foreground,
-    background: Color = default_background,
+    char: ?u8,
+    foreground: Color = DEFAULT_FOREGROUND,
+    background: Color = DEFAULT_BACKGROUND,
 };
 
-pub const Drawable = struct {
-    texture: []const Pixel,
-    cols: u16,
-    z_index: u8,
+pub const Drawing = struct {
+    sprite: sprites.SpriteEnum,
     position: Position,
 };
 
 pub const Frame = struct {
     term_size: TermSize,
-    draw_list: []const Drawable,
+    draw_list: []const Drawing,
 };
 
 pub const TermSize = struct {
